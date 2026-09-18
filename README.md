@@ -35,6 +35,56 @@ flowchart TD
 
 ---
 
+## Go Syntax Primer & Mental Model (Quick Reference)
+
+For anyone new to Go, here are the essential rules you need to know before reading any code:
+
+```go
+// 1. Package Header: 'package main' means an EXECUTABLE program with a main() function.
+//    Any other package name (e.g. 'package utils') produces a reusable library.
+package main
+
+// 2. Imports: Explicit dependencies. Go will refuse to compile if an import is unused!
+import (
+    "errors"
+    "fmt"
+)
+
+// 3. Structs: Go has no classes. We define composite data types with 'struct'.
+type User struct {
+    Name  string // Starts with CAPITAL letter -> EXPORTED (Public outside package)
+    email string // Starts with LOWERCASE letter -> UNEXPORTED (Private to package)
+}
+
+// 4. Functions: Types come AFTER the parameter names.
+//    Functions can return multiple values: (result, error) is the Go standard.
+func Divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, errors.New("cannot divide by zero")
+    }
+    return a / b, nil // 'nil' means no error occurred
+}
+
+// 5. Entrypoint: Execution always begins at func main()
+func main() {
+    // Variable Declarations:
+    // ':=' infers type automatically (used inside functions)
+    greeting := "Hello, Gopher!"
+    
+    // 'var' without value initializes to safe ZERO VALUES (0, "", false, nil)
+    var count int // count is guaranteed to be 0
+
+    // Struct Instantiation:
+    u := User{Name: "Divya", email: "divya@example.com"}
+
+    fmt.Printf("%s count=%d user=%s\n", greeting, count, u.Name)
+}
+```
+
+> 📖 **Deep Dive**: For the full, detailed breakdown, jump directly to the [**Module 02 Syntax & Fundamentals Guide**](./02-language-fundamentals/README.md).
+
+---
+
 ## Getting Started: Environment Setup
 
 ### 1. Installing Go

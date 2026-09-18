@@ -1,16 +1,177 @@
-# Module 02: Go Language Fundamentals
+# Module 02: Go Language Fundamentals & Syntax Guide
 
-## 1. Conceptual Foundation
-
-Go's syntax is deliberate, compact, and designed for readability across teams. Unlike languages with multiple syntactic sugars or implicit type coercions, Go favors **explicitness**:
-- Every Go program belongs to a `package`.
-- Executable programs start with `package main` and execution begins at `func main()`.
-- Unused variables and unused imports are compile-time errors.
-- Variables are statically typed; type conversions are always explicit.
+Welcome to Go Language Fundamentals. This guide starts with the exact anatomy of a Go program—explaining what every keyword means—before diving into syntax, memory layouts, and data structures.
 
 ---
 
-## 2. Internal Behavior: Memory Layouts & Data Structures
+## 1. Anatomy of a Go Program (Line-by-Line Breakdown)
+
+Every Go source file follows a strict, deliberate structure:
+
+```go
+// Line 1: Package Declaration
+package main
+
+// Line 2: Import Declarations
+import (
+    "fmt"
+    "time"
+)
+
+// Line 3: Entrypoint Function
+func main() {
+    fmt.Println("Hello, World! Time:", time.Now())
+}
+```
+
+### A. What is `package main`?
+- Every Go file **must** declare its package on line 1 (`package <name>`).
+- The name **`main`** is special:
+  - It indicates this file belongs to an **executable program** (not a shared library).
+  - The Go compiler looks for an entrypoint function named `func main()` and builds a standalone executable binary.
+  - If a file starts with any other name (e.g. `package utils`), it compiles into a **reusable library package**.
+
+### B. What is `import (...)`?
+- Declares the libraries or packages this file needs.
+- Go's compiler is famously strict: **If you import a package and do not use it, compilation will fail with an error.** This prevents dependency bloat and dead code.
+- Standard library packages (like `"fmt"` for formatted I/O, `"time"`, `"os"`) require no installation—they are built into Go.
+
+### C. What is `func main()`?
+- `func main()` is the entrypoint where execution begins when your compiled binary is launched.
+- It takes **no parameters** and returns **no values**.
+- Command-line arguments are accessed using the `os.Args` slice from the standard library `os` package.
+
+### D. The Semicolon & Curly Brace Rule
+Go has no semicolons at the ends of lines—the Go lexer automatically inserts them for you. Because of this automatic semicolon insertion, **opening braces `{` MUST stay on the same line**:
+```go
+// CORRECT:
+func calculate() {
+}
+
+// SYNTAX ERROR in Go (compiler inserts semicolon after func header!):
+func calculate()
+{
+}
+```
+
+---
+
+## 2. Core Syntax: Variables, Types & Visibility
+
+### A. Three Ways to Declare Variables
+Go is statically typed, but provides expressive type inference:
+
+```go
+// 1. Short variable declaration := (Used 90% of the time inside functions)
+name := "Divya"      // Infers type string
+score := 98.5        // Infers type float64
+count := 10          // Infers type int
+isActive := true     // Infers type bool
+
+// 2. Explicit var declaration (Useful when declaring without an initial value)
+var age int = 30
+
+// 3. Zero Value declaration (Guaranteed safe, default initial state)
+var total int        // Automatically initialized to 0
+var title string     // Automatically initialized to "" (empty string)
+var flag bool        // Automatically initialized to false
+var ptr *int         // Automatically initialized to nil
+```
+
+### B. Capitalization Rule: Exported (Public) vs. Unexported (Private)
+Go does **not** have `public`, `private`, or `protected` keywords. Visibility is controlled entirely by the **first letter's case**:
+- **Starts with an UPPERCASE letter (`User`, `CalculateTotal`, `Version`)**:
+  - **Exported (Public)**: Visible and accessible to other packages importing this package.
+- **Starts with a LOWERCASE letter (`user`, `calculateTotal`, `internalID`)**:
+  - **Unexported (Private)**: Accessible **only** within the current package.
+
+### C. Explicit Type Conversions (No Silent Coercion)
+Go will **never** implicitly convert types. Passing an `int32` to an `int64` parameter is a compile error unless converted explicitly:
+```go
+var a int32 = 10
+var b int64 = int64(a) // Explicit conversion mandatory
+```
+
+---
+
+## 3. How Functions Work (Parameters & Return Types)
+
+In Go, parameter types are written **after** parameter names.
+
+### A. Basic Function Signature
+```go
+//          name   type,  name   type   --> return type
+func Multiply(x     int,   y      int)          int {
+    return x * y
+}
+
+// Shorthand when consecutive parameters share the same type:
+func Add(x, y int) int {
+    return x + y
+}
+```
+
+### B. Multiple Return Values & The `val, err` Pattern
+In Go, functions that can fail return both the result and an `error`. Go does not use exceptions (`try/catch`):
+```go
+// Returns a float64 AND an error
+func Divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0.0, errors.New("cannot divide by zero")
+    }
+    return a / b, nil // 'nil' means no error occurred
+}
+
+// Caller checks error explicitly:
+result, err := Divide(10.0, 2.0)
+if err != nil {
+    fmt.Println("Error occurred:", err)
+    return
+}
+fmt.Println("Result:", result)
+```
+
+---
+
+## 4. Structs: How to Model Data
+
+Go has no classes. Custom types and structured records are created with **`struct`**.
+
+### A. Defining a Struct
+```go
+type Contact struct {
+    ID    int
+    Name  string
+    Email string
+}
+```
+
+### B. Instantiating a Struct
+```go
+// 1. Named-field instantiation (Recommended for clarity)
+c1 := Contact{
+    ID:    1,
+    Name:  "Alice",
+    Email: "alice@example.com",
+}
+
+// 2. Zero-value instantiation
+var c2 Contact // c2.ID = 0, c2.Name = "", c2.Email = ""
+c2.Name = "Bob"
+
+// 3. Pointer to a Struct
+// 'c3' holds memory address (*Contact)
+c3 := &Contact{
+    ID:   3,
+    Name: "Charlie",
+}
+// Go automatically dereferences struct pointers (no c3->Name syntax needed!):
+fmt.Println(c3.Name)
+```
+
+---
+
+## 5. Internal Behavior: Memory Layouts & Data Structures
 
 ### Slice Internals
 A slice in Go is not an array; it is a **slice header** (a 24-byte struct on 64-bit systems):
@@ -37,11 +198,11 @@ A Go map is a pointer to an `hmap` struct managing a bucket array:
 Pointers hold the memory address of a value.
 - `&x` produces a pointer to `x` (`*T`).
 - `*p` dereferences the pointer to access the underlying value.
-- Go has **no pointer arithmetic** (unless using the `unsafe` package), keeping memory safe.
+- Go has **no pointer arithmetic** (keeping memory safe).
 
 ---
 
-## 3. Design Discussion: Value vs. Pointer Semantics
+## 6. Design Discussion: Value vs. Pointer Semantics
 
 | Scenario | Recommendation | Rationale |
 | :--- | :--- | :--- |
@@ -53,7 +214,7 @@ Pointers hold the memory address of a value.
 
 ---
 
-## 4. Module Directory Structure
+## 7. Module Directory Structure
 
 ```text
 02-language-fundamentals/
@@ -72,11 +233,11 @@ Pointers hold the memory address of a value.
 
 ---
 
-## 5. Understanding Check
+## 8. Understanding Check
 
-1. **What happens when you slice a slice: `b := a[1:3]`?**
-   *Answer*: `b` shares the exact same underlying array as `a`. Modifying elements in `b` modifies elements in `a` unless `b` exceeds its capacity and triggers a reallocation via `append`.
-2. **How do you safely check if a key exists in a map?**
-   *Answer*: Use the comma-ok idiom: `val, ok := myMap[key]`. If `ok` is `false`, the key was not found.
-3. **When is a `defer` statement evaluated?**
-   *Answer*: The function arguments to the deferred call are evaluated **immediately** when the `defer` line is encountered, but the actual execution of the deferred function body occurs when the enclosing function returns.
+1. **Why does Go use `package main` instead of naming packages after filenames like in Java or Python?**
+   *Answer*: In Go, package names represent namespaces and compilation targets. Multiple `.go` files in the same directory share the same package name. `package main` specifically flags the directory as an executable program with a `main()` entrypoint.
+2. **How does Go determine whether a struct field or function is public or private?**
+   *Answer*: Purely by capitalization. Identifiers starting with a capital letter are exported (public); identifiers starting with a lowercase letter are unexported (private).
+3. **What is the comma-ok idiom for maps?**
+   *Answer*: `val, ok := myMap[key]`. If `ok` is `true`, the key exists. If `false`, the key is absent and `val` contains the type's default zero value.
