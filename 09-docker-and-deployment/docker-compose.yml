@@ -1,0 +1,38 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: gotraining-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: gotraining
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../07-database-and-architecture/project-postgres-api/db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ..
+      dockerfile: ./09-docker-and-deployment/Dockerfile
+    container_name: gotraining-api
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      ENVIRONMENT: production
+      DATABASE_URL: postgres://postgres:secretpassword@database:5432/gotraining?sslmode=disable
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
