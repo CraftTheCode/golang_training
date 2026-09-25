@@ -1,0 +1,10 @@
+# Generated executables
+*.exe
+
+# Practice files for local use
+11-practice/
+
+# Mkdocs related files including .venv
+.venv
+site
+__pycache__

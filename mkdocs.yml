@@ -1,0 +1,178 @@
+site_name: Practical Go Engineering
+site_description: Zero to Production Go Training Course
+site_author: Divya
+
+docs_dir: docs
+site_dir: site
+
+exclude_docs: |
+  11-practice/**
+  *.exe
+  site/**
+  .venv/**
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+hooks:
+  - hooks.py
+
+nav:
+  - "Course Home": "README.md"
+  - "Learning Roadmap": "go-learning-roadmap.md"
+
+  - "01: Philosophy & Runtime":
+      - "Overview & Guide": "01-philosophy-and-runtime/README.md"
+      - "Code: memory_and_escape.go": "01-philosophy-and-runtime/memory_and_escape_go.md"
+
+  - "02: Language Fundamentals":
+      - "Syntax & Fundamentals Guide": "02-language-fundamentals/README.md"
+      - "Examples":
+          - "01 Syntax & Types": "02-language-fundamentals/01_syntax_and_types/main_go.md"
+          - "02 Control Flow & Defer": "02-language-fundamentals/02_control_flow/main_go.md"
+          - "03 Functions & Closures": "02-language-fundamentals/03_functions_and_closures/main_go.md"
+          - "04 Slices, Arrays & Maps": "02-language-fundamentals/04_slices_arrays_maps/main_go.md"
+          - "05 Pointers & Memory": "02-language-fundamentals/05_pointers_and_memory/main_go.md"
+      - "Exercises":
+          - "01 Temperature Converter": "02-language-fundamentals/exercises/01_temp_converter/main_go.md"
+          - "02 Log Line Counter": "02-language-fundamentals/exercises/02_log_line_counter/main_go.md"
+          - "03 Word Frequency Counter": "02-language-fundamentals/exercises/03_word_frequency/main_go.md"
+          - "04 Contact Manager": "02-language-fundamentals/exercises/04_contact_manager/main_go.md"
+          - "05 Configuration Parser": "02-language-fundamentals/exercises/05_config_parser/main_go.md"
+
+  - "03: Idiomatic Go Design":
+      - "Design Principles Guide": "03-idiomatic-go-design/README.md"
+      - "Examples":
+          - "01 Structs & Methods": "03-idiomatic-go-design/01_structs_and_methods/main_go.md"
+          - "02 Interfaces & Polymorphism": "03-idiomatic-go-design/02_interfaces_and_polymorphism/main_go.md"
+          - "03 Robust Error Handling": "03-idiomatic-go-design/03_robust_error_handling/main_go.md"
+      - "Mini-Project: Config Manager":
+          - "Project Overview": "03-idiomatic-go-design/mini-project-config-manager/README.md"
+          - "config.go": "03-idiomatic-go-design/mini-project-config-manager/config_go.md"
+          - "config_test.go": "03-idiomatic-go-design/mini-project-config-manager/config_test_go.md"
+
+  - "04: CLI Applications":
+      - "CLI Architecture Guide": "04-cli-applications/README.md"
+      - "Examples":
+          - "01 Flags & Standard I/O": "04-cli-applications/01_flags_and_io/main_go.md"
+          - "02 JSON & File Operations": "04-cli-applications/02_json_and_files/main_go.md"
+      - "Project: gomanager Task Manager":
+          - "Project Overview": "04-cli-applications/project-gomanager/README.md"
+          - "cmd/gomanager/main.go": "04-cli-applications/project-gomanager/cmd/gomanager/main_go.md"
+          - "internal/model/task.go": "04-cli-applications/project-gomanager/internal/model/task_go.md"
+          - "internal/service/task_service.go": "04-cli-applications/project-gomanager/internal/service/task_service_go.md"
+          - "internal/service/task_service_test.go": "04-cli-applications/project-gomanager/internal/service/task_service_test_go.md"
+          - "internal/repository/json_storage.go": "04-cli-applications/project-gomanager/internal/repository/json_storage_go.md"
+
+  - "05: Concurrency Deep-Dive":
+      - "Concurrency & Scheduler Guide": "05-concurrency-deep-dive/README.md"
+      - "Examples":
+          - "01 Goroutines & Channels": "05-concurrency-deep-dive/01_goroutines_and_channels/main_go.md"
+          - "02 Sync Primitives": "05-concurrency-deep-dive/02_sync_primitives/main_go.md"
+          - "03 Context & Cancellation": "05-concurrency-deep-dive/03_context_and_cancellation/main_go.md"
+          - "04 Concurrency Patterns": "05-concurrency-deep-dive/04_concurrency_patterns/main_go.md"
+          - "05 Race Detector & Leaks": "05-concurrency-deep-dive/05_race_detector_and_leaks/main_go.md"
+      - "Project: Concurrent File Processor":
+          - "Project Overview": "05-concurrency-deep-dive/project-file-processor/README.md"
+          - "processor.go": "05-concurrency-deep-dive/project-file-processor/processor_go.md"
+          - "processor_test.go": "05-concurrency-deep-dive/project-file-processor/processor_test_go.md"
+
+  - "06: Networking & HTTP":
+      - "Networking & HTTP Guide": "06-networking-and-http/README.md"
+      - "Examples":
+          - "01 TCP Echo Server": "06-networking-and-http/01_tcp_echo_server/main_go.md"
+          - "02 HTTP Server & Client": "06-networking-and-http/02_http_server_and_client/main_go.md"
+          - "03 Middleware Patterns": "06-networking-and-http/03_middleware_patterns/main_go.md"
+      - "Project: REST API":
+          - "API Overview & Usage": "06-networking-and-http/project-rest-api/README.md"
+          - "main.go": "06-networking-and-http/project-rest-api/main_go.md"
+          - "handler/task_handler.go": "06-networking-and-http/project-rest-api/handler/task_handler_go.md"
+          - "middleware/middleware.go": "06-networking-and-http/project-rest-api/middleware/middleware_go.md"
+          - "api_test.go": "06-networking-and-http/project-rest-api/api_test_go.md"
+
+  - "07: Database & Architecture":
+      - "Database & Pooling Guide": "07-database-and-architecture/README.md"
+      - "Examples":
+          - "01 Connection Pools": "07-database-and-architecture/01_connection_pools/main_go.md"
+          - "02 Transactions & Errors": "07-database-and-architecture/02_transactions_and_errors/main_go.md"
+      - "Project: Layered Postgres API":
+          - "Project Overview": "07-database-and-architecture/project-postgres-api/README.md"
+          - "db/migrations/001_init.sql": "07-database-and-architecture/project-postgres-api/db/migrations/001_init_sql.md"
+          - "internal/domain/models.go": "07-database-and-architecture/project-postgres-api/internal/domain/models_go.md"
+          - "internal/repository/postgres.go": "07-database-and-architecture/project-postgres-api/internal/repository/postgres_go.md"
+          - "internal/repository/memory.go": "07-database-and-architecture/project-postgres-api/internal/repository/memory_go.md"
+
+  - "08: Testing & Benchmarking":
+      - "Testing & Quality Guide": "08-testing-and-benchmarking/README.md"
+      - "01 Table-Driven Tests":
+          - "calc.go": "08-testing-and-benchmarking/01_table_driven_tests/calc_go.md"
+          - "calc_test.go": "08-testing-and-benchmarking/01_table_driven_tests/calc_test_go.md"
+      - "02 Mocking & Fakes":
+          - "notifier.go": "08-testing-and-benchmarking/02_mocking_and_fakes/notifier_go.md"
+          - "notifier_test.go": "08-testing-and-benchmarking/02_mocking_and_fakes/notifier_test_go.md"
+      - "03 HTTP Testing":
+          - "handler.go": "08-testing-and-benchmarking/03_http_testing/handler_go.md"
+          - "handler_test.go": "08-testing-and-benchmarking/03_http_testing/handler_test_go.md"
+      - "04 Benchmarking & Profiling":
+          - "string_builder.go": "08-testing-and-benchmarking/04_benchmarking_and_profiling/string_builder_go.md"
+          - "string_builder_test.go": "08-testing-and-benchmarking/04_benchmarking_and_profiling/string_builder_test_go.md"
+
+  - "09: Docker & Deployment":
+      - "Deployment Guide": "09-docker-and-deployment/README.md"
+      - "Dockerfile": "09-docker-and-deployment/Dockerfile_view.md"
+      - "docker-compose.yml": "09-docker-and-deployment/docker-compose_yml.md"
+      - "Linux Systemd Service Guide": "09-docker-and-deployment/linux_systemd_guide.md"
+
+  - "10: Capstone Service Manager":
+      - "Capstone Overview": "10-capstone-service-manager/README.md"
+      - "Makefile": "10-capstone-service-manager/Makefile_view.md"
+      - "Daemon Server":
+          - "cmd/gsm-server/main.go": "10-capstone-service-manager/cmd/gsm-server/main_go.md"
+          - "internal/config/config.go": "10-capstone-service-manager/internal/config/config_go.md"
+          - "internal/model/service.go": "10-capstone-service-manager/internal/model/service_go.md"
+          - "internal/storage/store.go": "10-capstone-service-manager/internal/storage/store_go.md"
+          - "internal/worker/health_checker.go": "10-capstone-service-manager/internal/worker/health_checker_go.md"
+          - "internal/api/server.go": "10-capstone-service-manager/internal/api/server_go.md"
+          - "internal/api/server_test.go": "10-capstone-service-manager/internal/api/server_test_go.md"
+      - "CLI Client":
+          - "cmd/gsm-cli/main.go": "10-capstone-service-manager/cmd/gsm-cli/main_go.md"
