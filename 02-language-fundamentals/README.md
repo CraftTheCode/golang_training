@@ -92,7 +92,108 @@ var a int32 = 10
 var b int64 = int64(a) // Explicit conversion mandatory
 ```
 
+### D. Constants and `iota`
+
+**Constants** are values fixed at compile-time. They cannot be changed at runtime:
+```go
+const Pi = 3.14159           // Untyped constant (adapts to context)
+const MaxRetries int = 5     // Typed constant (explicitly int)
+```
+
+**`iota`** is Go's constant generator. It is a compile-time counter that:
+- Starts at `0` in every new `const` block
+- Increments by `1` for each line (not each use)
+- Resets to `0` when a new `const (...)` block begins
+
+```go
+// Basic: Sequential integers (most common)
+const (
+    StatusPending    = iota  // 0
+    StatusActive             // 1 (iota = 1, expression inherited)
+    StatusSuspended          // 2
+    StatusTerminated         // 3
+)
+```
+
+**Advanced Pattern — Bit Flags** (each value is a separate bit):
+```go
+// Permissions as bitmask flags using left-shift
+const (
+    PermRead    = 1 << iota  // 1   (binary: 001)
+    PermWrite                // 2   (binary: 010)
+    PermExecute              // 4   (binary: 100)
+)
+// Combine with bitwise OR: readWrite := PermRead | PermWrite  → 3 (011)
+// Check with bitwise AND: hasRead := (perms & PermRead) != 0
+```
+
+**Advanced Pattern — Byte Sizes** (multiply iota in expression):
+```go
+const (
+    _  = iota             // 0 — skip with blank identifier
+    KB = 1 << (10 * iota) // 1 << 10 = 1024
+    MB                    // 1 << 20 = 1,048,576
+    GB                    // 1 << 30 = 1,073,741,824
+    TB                    // 1 << 40
+)
+```
+
+**Key Rules**:
+- `iota` ONLY works inside `const (...)` blocks
+- The expression on the first line is **inherited** by subsequent lines (that's why `StatusActive` gets `iota` automatically)
+- Use `_` (blank identifier) to skip values: `_ = iota` consumes position 0 without creating a constant
+
+### E. `fmt.Printf` Format Verbs — Quick Reference
+
+Go's `fmt.Printf` uses **verbs** (placeholders) to format values. Common verbs used throughout this course:
+
+| Verb | Type | What It Prints | Example |
+| :--- | :--- | :--- | :--- |
+| `%d` | int | Decimal integer | `42` |
+| `%f` | float | Decimal float (default 6 decimals) | `3.141590` |
+| `%.2f` | float | Float with 2 decimal places | `3.14` |
+| `%s` | string | Plain string | `hello` |
+| `%q` | string | **Quoted** string (with escape chars shown) | `"hello\nworld"` |
+| `%t` | bool | Boolean `true` / `false` | `true` |
+| `%v` | any | Default format (Go chooses based on type) | `{Alice 30}` |
+| `%+v` | struct | Struct with **field names** shown | `{Name:Alice Age:30}` |
+| `%T` | any | **Type** of the value | `main.User` |
+| `%p` | pointer | Memory address in hexadecimal | `0xc0000b4008` |
+| `%x` | int/[]byte | Hexadecimal | `2a` |
+| `%%` | — | Literal `%` character | `%` |
+
+Width and precision: `%6.2f` means "minimum 6 characters wide, 2 decimal places". `%-8s` means "left-aligned, minimum 8 characters wide".
+
+### F. Strings, Bytes, and Runes
+
+Go strings are **immutable sequences of bytes**, NOT characters. This distinction matters for non-ASCII text:
+
+```go
+s := "Héllo 世界"
+
+len(s)                           // 13 — counts BYTES, not characters!
+utf8.RuneCountInString(s)        // 8  — counts Unicode code points (runes)
+
+// Ranging over a string yields RUNES (Unicode code points), not bytes:
+for i, r := range s {
+    fmt.Printf("Index %d: rune %c (U+%04X)\n", i, r, r)
+}
+// Index 0: rune H (U+0048)
+// Index 1: rune é (U+00E9) — 2 bytes!
+// Index 3: rune l (U+006C)
+// ...
+// Index 9: rune 世 (U+4E16) — 3 bytes!
+```
+
+Key facts:
+- `byte` = `uint8` (1 byte). Used for ASCII and raw data.
+- `rune` = `int32` (up to 4 bytes). Represents a single Unicode character.
+- `len(string)` returns **byte count**, not character count.
+- `for _, r := range string` iterates **runes**, not bytes.
+- Use `strings.Builder` for efficient string construction (strings are immutable, so `+` concatenation creates a new string each time).
+
 ---
+
 
 ## 3. How Functions Work (Parameters & Return Types)
 

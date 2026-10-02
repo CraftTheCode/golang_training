@@ -68,4 +68,24 @@ func main() {
 
 	// Explicit inner struct access still works
 	fmt.Printf("Explicit: %s\n", u.Address.LocationString())
+
+	fmt.Println("\n=== 3. Struct Tags (Metadata & Serialization Annotations) ===")
+	// Struct tags are string annotations enclosed in backticks (`tag:"value"`).
+	// They provide compile-time metadata attached to struct fields.
+	// Common uses:
+	//   `json:"user_id"`         -> Controls JSON field naming
+	//   `json:"password,omitempty"` -> Omits field if empty/zero value
+	//   `json:"-"`               -> Excludes field entirely from JSON
+	//   `xml:"...", db:"..."`    -> XML or database mapping
+	type Product struct {
+		ID       int     `json:"product_id" db:"id"`
+		Name     string  `json:"title"`
+		Price    float64 `json:"unit_price"`
+		Secret   string  `json:"-"` // "-" means never serialize
+	}
+
+	prod := Product{ID: 1, Name: "Mechanical Keyboard", Price: 79.99, Secret: "warehouse-bin-42"}
+	fmt.Printf("Struct instance: %+v\n", prod)
+	fmt.Println("Struct tags attach metadata read via reflection by packages like encoding/json, gorm, or validator.")
 }
+

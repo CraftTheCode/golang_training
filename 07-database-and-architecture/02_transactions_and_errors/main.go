@@ -49,7 +49,7 @@ func TransferFunds(ctx context.Context, db *sql.DB, fromAccount, toAccount int, 
 
 func main() {
 	fmt.Println("=== Canonical Go Transaction Pattern ===")
-	fmt.Println(`
+	fmt.Print(`
 Key Rules for database/sql Transactions:
 1. Always call 'defer tx.Rollback()'.
    - If you return with an error anywhere in the function, it rolls back.
@@ -57,6 +57,7 @@ Key Rules for database/sql Transactions:
 2. Use 'tx.ExecContext' and 'tx.QueryRowContext' (NOT 'db.ExecContext' inside a transaction!).
 3. Set transaction isolation levels when needed (e.g. sql.LevelSerializable).
 `)
+
 
 	// Context with timeout prevents hung transactions
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

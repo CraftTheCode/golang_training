@@ -41,14 +41,53 @@ A professional CLI must exhibit:
 
 ---
 
-## 3. Standard Library Tools
-- `flag`: Standard flag parsing package, supports `flag.NewFlagSet` for subcommands.
-- `os`: Args, environment, exit codes (`os.Exit`), file descriptors.
-- `bufio`: Buffered reading (`bufio.NewScanner`) and writing.
-- `encoding/json`: Serialization and streaming (`json.Encoder` / `json.Decoder`).
-- `log/slog`: Structured logging built into Go 1.21+.
+## 3. Standard Library Tools & Core Concepts
+
+### A. The `flag` Package: Pointer Semantics
+```go
+// Returns a POINTER (*string, *int, *bool) because the flags are defined before
+// os.Args are parsed. flag.Parse() writes into the memory addresses of these pointers.
+port := flag.Int("port", 8080, "HTTP server listening port")
+debug := flag.Bool("debug", false, "Enable verbose debug logging")
+
+flag.Parse() // Must be called after definitions, before reading *port or *debug
+
+fmt.Printf("Starting on port %d (debug=%t)\n", *port, *debug)
+```
+- `flag.Args()` returns remaining positional arguments (e.g. `mycli -v arg1 arg2` -> `["arg1", "arg2"]`).
+- `flag.NArg()` returns the count of non-flag arguments.
+
+### B. Stream Separation: `os.Stdout` vs `os.Stderr`
+Unix philosophy dictates that **only primary program output goes to stdout**.
+- Diagnostics, logs, errors, and `--help` output must go to `os.Stderr`:
+```go
+fmt.Fprintf(os.Stderr, "Error: missing required argument\n")
+os.Exit(1) // Non-zero indicates failure to calling shell/CI
+```
+This ensures downstream commands can safely pipe output: `mycli -format=json | jq .` without log lines corrupting the JSON stream.
+
+### C. Detecting Piped Input (Terminal vs Pipe)
+```go
+stat, _ := os.Stdin.Stat()
+if (stat.Mode() & os.ModeCharDevice) == 0 {
+    // Input is being piped via stdin: `cat data.txt | mycli`
+    data, _ := io.ReadAll(os.Stdin)
+} else {
+    // Input is interactive: user launched `mycli` directly in terminal
+}
+```
+
+### D. JSON: Streaming (`Encoder`/`Decoder`) vs In-Memory (`Marshal`/`Unmarshal`)
+
+| Operation | Best Used For | Memory Behavior |
+| :--- | :--- | :--- |
+| `json.NewEncoder(w).Encode(v)` | Files, HTTP responses, network sockets | Streams directly to `io.Writer` without allocating intermediate `[]byte` |
+| `json.NewDecoder(r).Decode(&v)` | Reading from files, HTTP request bodies | Reads chunks directly from `io.Reader` |
+| `json.Marshal(v)` | Small objects, caching in Redis/memory | Allocates entire encoded JSON into a single `[]byte` slice |
+| `json.Unmarshal(b, &v)` | Parsing an existing `[]byte` in memory | Requires complete payload pre-buffered in memory |
 
 ---
+
 
 ## 4. Module Directory Structure
 

@@ -47,6 +47,23 @@ type Writer interface {
 }
 ```
 "The bigger the interface, the weaker the abstraction." — Rob Pike
+### Struct Tags: Field Annotations and Metadata
+
+Struct tags are string literals placed in backticks after field declarations:
+```go
+type User struct {
+    ID        int64     `json:"id" db:"user_id"`
+    Email     string    `json:"email"`
+    Password  string    `json:"-"`                // "-" means never include in serialization
+    Nickname  string    `json:"nickname,omitempty"` // omits field if zero-value ("")
+    CreatedAt time.Time `json:"created_at"`
+}
+```
+
+**How They Work**:
+- At compile-time, the compiler stores tag strings inside the type's runtime metadata (`reflect.StructTag`).
+- Packages like `encoding/json`, `encoding/xml`, ORMs (`gorm`), and validators (`go-playground/validator`) read these tags at runtime using the `reflect` package to determine custom field names, validation constraints, or column mappings.
+- Struct tags eliminate the need for verbose mapping code or separate DTO configuration files.
 
 ### Error Wrapping and Inspection (Go 1.13+)
 Always add context when returning errors:
@@ -65,6 +82,7 @@ if errors.As(err, &pathErr) { ... }       // Extracts custom error type from cha
 ---
 
 ## 4. Packages and Modules
+
 
 ### The Fundamental Rule: 1 Directory = 1 Package
 The Go toolchain enforces that **all `.go` files in the same directory must declare the same `package` name**. A directory IS a package.
