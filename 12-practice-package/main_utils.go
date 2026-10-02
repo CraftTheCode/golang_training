@@ -14,3 +14,10 @@ type TestMix struct {
 	Name string
 	age  int
 }
+
+func GetTestMix(name string, age int) *TestMix {
+	return &TestMix{
+		Name: name,
+		age:  age,
+	}
+}

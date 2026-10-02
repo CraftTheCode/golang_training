@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"golang_training/12-practice-package"
+	practice "golang_training/12-practice-package"
 )
 
 func Experiment() {
@@ -18,9 +18,6 @@ func Experiment() {
 
 	// ✅ TestMix — uppercase type, exported. But 'age' is lowercase (unexported).
 	// We can only set the exported field 'Name', not the unexported 'age'.
-	tmix := practice.TestMix{
-		Name: "mix",
-		// age: 25, // ❌ This would fail — 'age' is unexported
-	}
-	fmt.Println("TestMix:", tmix)
+	tmix := practice.GetTestMix("Divyanshu", 29)
+	fmt.Println("TestMix:", *tmix)
 }
