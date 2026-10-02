@@ -110,8 +110,9 @@ func main() {
 	// ── Strings, Bytes, and Runes ──
 	fmt.Println("\n=== Strings, Bytes, and Runes ===")
 	// Go strings are byte slices, NOT character arrays.
-	// This matters for non-ASCII text (emoji, accented chars, CJK characters).
-	s := "Héllo 世界"
+	// ASCII English characters take 1 byte each.
+	// Accented letters and emojis take 2 to 4 bytes in UTF-8.
+	s := "Café 🌍"
 	fmt.Printf("String: %s\n", s)
 	fmt.Printf("len() = %d bytes (counts raw bytes, NOT characters!)\n", len(s))
 
@@ -121,10 +122,11 @@ func main() {
 		_ = r // r is a rune (int32), representing one Unicode character
 		runeCount++
 	}
-	fmt.Printf("Rune count = %d characters (é=2bytes, 世=3bytes, 界=3bytes)\n", runeCount)
+	fmt.Printf("Rune count = %d characters ('C','a','f'=1byte, 'é'=2bytes, ' '=1byte, '🌍'=4bytes)\n", runeCount)
 
-	// byte = uint8 (1 byte, for ASCII and raw data)
-	// rune = int32 (up to 4 bytes, for any Unicode character)
-	fmt.Printf("Type of 'A': %T, Type of '世': %T\n", 'A', '世')
+	// byte = uint8 (1 byte, for ASCII and raw binary data)
+	// rune = int32 (up to 4 bytes, represents any Unicode character/symbol/emoji)
+	fmt.Printf("Type of 'A': %T, Type of 'é': %T, Type of '🌍': %T\n", 'A', 'é', '🌍')
 }
+
 

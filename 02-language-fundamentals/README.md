@@ -169,25 +169,27 @@ Width and precision: `%6.2f` means "minimum 6 characters wide, 2 decimal places"
 Go strings are **immutable sequences of bytes**, NOT characters. This distinction matters for non-ASCII text:
 
 ```go
-s := "Héllo 世界"
+s := "Café 🌍"
 
-len(s)                           // 13 — counts BYTES, not characters!
-utf8.RuneCountInString(s)        // 8  — counts Unicode code points (runes)
+len(s)                           // 10 — counts BYTES, not characters!
+utf8.RuneCountInString(s)        // 6  — counts Unicode code points (runes)
+
 
 // Ranging over a string yields RUNES (Unicode code points), not bytes:
 for i, r := range s {
-    fmt.Printf("Index %d: rune %c (U+%04X)\n", i, r, r)
+    fmt.Printf("Byte index %d: rune %c\n", i, r)
 }
-// Index 0: rune H (U+0048)
-// Index 1: rune é (U+00E9) — 2 bytes!
-// Index 3: rune l (U+006C)
-// ...
-// Index 9: rune 世 (U+4E16) — 3 bytes!
+// Byte index 0: rune C (1 byte)
+// Byte index 1: rune a (1 byte)
+// Byte index 2: rune f (1 byte)
+// Byte index 3: rune é (2 bytes! U+00E9)
+// Byte index 5: rune   (1 byte space)
+// Byte index 6: rune 🌍 (4 bytes! U+1F30D)
 ```
 
 Key facts:
-- `byte` = `uint8` (1 byte). Used for ASCII and raw data.
-- `rune` = `int32` (up to 4 bytes). Represents a single Unicode character.
+- `byte` = `uint8` (1 byte). Used for standard ASCII English and raw binary data.
+- `rune` = `int32` (up to 4 bytes). Represents any Unicode character, accent, or emoji.
 - `len(string)` returns **byte count**, not character count.
 - `for _, r := range string` iterates **runes**, not bytes.
 - Use `strings.Builder` for efficient string construction (strings are immutable, so `+` concatenation creates a new string each time).
