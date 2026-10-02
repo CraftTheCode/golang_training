@@ -3,8 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"golang_training/12-practice-package"
-	"golang_training/11-practice"
 )
 
 type Account struct {
@@ -31,5 +29,6 @@ func Divide(a, b int) (int, error) {
 func main() {
 	fmt.Println("Hello Go world!")
 
-	practice.Experiment()
+	// Experiment() is in practice_utils.go — same package, no import needed
+	Experiment()
 }

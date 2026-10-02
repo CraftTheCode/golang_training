@@ -1,21 +1,26 @@
-package practice
+package main
+
+import (
+	"fmt"
+	"golang_training/12-practice-package"
+)
 
 func Experiment() {
-	tprivate := practice.testPrivate{
-		typed: "private",
-		count: 1,
-	}
-	fmt.Println(tprivate)
+	// ❌ testPrivate — lowercase type, CANNOT be accessed from outside the package
+	// tprivate := practice.testPrivate{} // This would cause a compile error
 
+	// ✅ TestPublic — uppercase type, exported. All fields are uppercase too, so all accessible.
 	tpublic := practice.TestPublic{
 		Name: "public",
 		Age:  30,
 	}
-	fmt.Println(tpublic)
+	fmt.Println("TestPublic:", tpublic)
 
+	// ✅ TestMix — uppercase type, exported. But 'age' is lowercase (unexported).
+	// We can only set the exported field 'Name', not the unexported 'age'.
 	tmix := practice.TestMix{
 		Name: "mix",
-		age:  25,
+		// age: 25, // ❌ This would fail — 'age' is unexported
 	}
-	fmt.Println(tmix)
+	fmt.Println("TestMix:", tmix)
 }
