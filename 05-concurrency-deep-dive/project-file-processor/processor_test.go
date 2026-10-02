@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"sync/atomic"
 	"testing"
-	"time"
 )
+
 
 func createTestDirectory(t *testing.T, count int) string {
 	t.Helper()

@@ -5,14 +5,25 @@ import (
 	"time"
 )
 
-// sendData demonstrates send-only channel direction chan<-
+// ── Channel Directions and Syntax ──
+// In Go, channel types can specify transfer direction for compile-time safety:
+//   1. `chan int`   - Bidirectional: can send (ch <- 1) AND receive (val := <-ch)
+//   2. `chan<- int` - Send-Only: can ONLY send data into the channel. Reading is a compile error!
+//   3. `<-chan int` - Receive-Only: can ONLY read data out of the channel. Writing is a compile error!
+//
+// Why use directional channels?
+// They enforce API boundaries at compile-time: a producer cannot accidentally read from its
+// own channel, and a consumer cannot accidentally write to or close the channel.
 func sendData(ch chan<- int, count int) {
 	for i := 1; i <= count; i++ {
 		ch <- i
 		time.Sleep(20 * time.Millisecond)
 	}
-	close(ch) // Only the sender should close a channel!
+	// Idiom: ONLY the producer/sender should close a channel!
+	// Closing from a receiver or closing twice panics.
+	close(ch)
 }
+
 
 func main() {
 	fmt.Println("=== 1. Unbuffered Channel (Synchronous Rendezvous) ===")

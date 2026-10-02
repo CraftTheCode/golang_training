@@ -41,15 +41,24 @@ func handleConnection(conn net.Conn) {
 
 func main() {
 	// 1. Listen on local TCP port
-	listener, err := net.Listen("tcp", "127.0.0.1:0") // 0 requests an ephemeral free port
+	// Specifying port ":0" asks the operating system to allocate an ephemeral free port.
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		fmt.Printf("Failed to bind TCP listener: %v\n", err)
 		return
 	}
+	// Idiom: defer Close() immediately after checking error so socket is freed on return
 	defer listener.Close()
 
-	port := listener.Addr().(*net.TCPAddr).Port
+	// ── Type Assertion on Interfaces ──
+	// listener.Addr() returns the generic interface `net.Addr` (which only exposes Network() and String()).
+	// But since we created a TCP listener, the underlying concrete type is `*net.TCPAddr`.
+	// The syntax `val.(*net.TCPAddr)` is a TYPE ASSERTION:
+	// It extracts the concrete `*net.TCPAddr` pointer, allowing us to read its `.Port` integer field!
+	tcpAddr := listener.Addr().(*net.TCPAddr)
+	port := tcpAddr.Port
 	fmt.Printf("=== TCP Echo Server listening on 127.0.0.1:%d ===\n", port)
+
 
 	// Accept connections in background
 	go func() {

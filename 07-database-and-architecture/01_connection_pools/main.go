@@ -42,12 +42,13 @@ func main() {
 	// db, err := sql.Open("pgx", "postgres://user:pass@localhost:5432/dbname")
 	// ConfigurePool(db)
 
-	fmt.Println(`
+	fmt.Print(`
 Rules for Production Connection Pooling:
 1. SetMaxOpenConns must be <= Database server max_connections / number of app replicas.
 2. SetMaxIdleConns should be high enough to avoid creating new connections on brief spikes.
 3. Always use context timeouts on PingContext, QueryContext, and ExecContext.
 `)
+
 
 	// Simulate stats output
 	mockStats := sql.DBStats{

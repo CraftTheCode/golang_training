@@ -69,7 +69,18 @@ func demonstrateRateLimiting() {
 	}
 	close(requests)
 
-	// Rate limiter: 1 event every 50ms
+// Rate limiter: 1 event every 50ms
+	// ⚠️ CAVEAT ABOUT time.Tick:
+	// time.Tick is convenient for quick scripts, but it NEVER stops the underlying ticker,
+	// meaning it cannot be garbage collected. Calling time.Tick inside functions or HTTP handlers
+	// will LEAK memory!
+	// Production Best Practice:
+	//   ticker := time.NewTicker(50 * time.Millisecond)
+	//   defer ticker.Stop() // Prevents ticker leak!
+	//   for req := range requests {
+	//       <-ticker.C
+	//       ...
+	//   }
 	limiter := time.Tick(50 * time.Millisecond)
 
 	for req := range requests {
@@ -78,6 +89,7 @@ func demonstrateRateLimiting() {
 			req, time.Now().Format("15:04:05.000"))
 	}
 }
+
 
 func main() {
 	fmt.Println("=== 1. Worker Pool Pattern ===")
