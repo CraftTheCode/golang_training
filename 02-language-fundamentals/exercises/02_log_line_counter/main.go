@@ -11,13 +11,19 @@ import (
 	"strings"
 )
 
+// LogStats holds aggregated metrics from a batch of log lines.
+// Counts uses a map[string]int because the set of log levels is dynamic
+// (we don't know in advance which levels will appear).
 type LogStats struct {
 	Total     int
 	Counts    map[string]int
 	ErrorRate float64
 }
 
+// AnalyzeLogs parses log lines and tallies occurrences of each log level.
+// Demonstrates: struct initialization, map usage, string processing, and the tagless switch pattern.
 func AnalyzeLogs(logLines []string) LogStats {
+	// make() is required for maps — a nil map panics on write.
 	stats := LogStats{
 		Counts: make(map[string]int),
 	}
@@ -29,6 +35,9 @@ func AnalyzeLogs(logLines []string) LogStats {
 		}
 		stats.Total++
 
+		// Convert to uppercase for case-insensitive matching.
+		// Tagless switch (switch without a value) acts like an if/else-if chain
+		// but is more readable when checking multiple conditions.
 		upper := strings.ToUpper(trimmed)
 		switch {
 		case strings.Contains(upper, "[ERROR]"):
@@ -44,7 +53,9 @@ func AnalyzeLogs(logLines []string) LogStats {
 		}
 	}
 
+	// Guard against division by zero — ErrorRate is only meaningful with data.
 	if stats.Total > 0 {
+		// Type conversion float64() is required — Go does not implicitly convert int to float.
 		stats.ErrorRate = (float64(stats.Counts["ERROR"]) / float64(stats.Total)) * 100.0
 	}
 

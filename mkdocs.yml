@@ -86,6 +86,9 @@ nav:
           - "01 Structs & Methods": "03-idiomatic-go-design/01_structs_and_methods/main_go.md"
           - "02 Interfaces & Polymorphism": "03-idiomatic-go-design/02_interfaces_and_polymorphism/main_go.md"
           - "03 Robust Error Handling": "03-idiomatic-go-design/03_robust_error_handling/main_go.md"
+          - "04 Packages & Modules": "03-idiomatic-go-design/04_packages_and_modules/main_go.md"
+          - "04 Package Demo (greetpkg)": "03-idiomatic-go-design/04_packages_and_modules/greetpkg/greet_go.md"
+          - "05 Generics Introduction": "03-idiomatic-go-design/05_generics_intro/main_go.md"
       - "Mini-Project: Config Manager":
           - "Project Overview": "03-idiomatic-go-design/mini-project-config-manager/README.md"
           - "config.go": "03-idiomatic-go-design/mini-project-config-manager/config_go.md"

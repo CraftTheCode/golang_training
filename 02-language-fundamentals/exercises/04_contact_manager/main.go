@@ -18,18 +18,28 @@ type Contact struct {
 	Phone string
 }
 
+// ContactManager is the in-memory store for contacts.
+// Uses a map[int]*Contact (pointer values) so that methods like Update
+// can modify the contact in-place without re-inserting into the map.
+// nextID is an auto-incrementing counter — unexported to prevent external tampering.
 type ContactManager struct {
 	contacts map[int]*Contact
 	nextID   int
 }
 
+// NewContactManager is a constructor function — the idiomatic Go pattern for
+// initializing structs that require setup (like allocating the internal map).
+// Returns a pointer to avoid copying the struct on every assignment.
 func NewContactManager() *ContactManager {
 	return &ContactManager{
-		contacts: make(map[int]*Contact),
+		contacts: make(map[int]*Contact), // maps must be initialized before use
 		nextID:   1,
 	}
 }
 
+// Add creates a new contact after validation.
+// Uses a POINTER receiver (*ContactManager) because it mutates cm.contacts and cm.nextID.
+// Returns (*Contact, error) — never panics on bad input, always returns a descriptive error.
 func (cm *ContactManager) Add(name, email, phone string) (*Contact, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
@@ -50,6 +60,8 @@ func (cm *ContactManager) Add(name, email, phone string) (*Contact, error) {
 	return contact, nil
 }
 
+// FindByName searches contacts by partial name match (case-insensitive).
+// Returns a slice of pointers — callers get references to the actual data, not copies.
 func (cm *ContactManager) FindByName(query string) []*Contact {
 	query = strings.ToLower(query)
 	var matches []*Contact
@@ -61,7 +73,11 @@ func (cm *ContactManager) FindByName(query string) []*Contact {
 	return matches
 }
 
+// Update modifies an existing contact's fields.
+// Only updates fields where the caller provides a non-empty value,
+// preserving existing data for fields not being changed.
 func (cm *ContactManager) Update(id int, newEmail, newPhone string) error {
+	// Comma-ok idiom: check existence before accessing
 	contact, exists := cm.contacts[id]
 	if !exists {
 		return fmt.Errorf("contact with ID %d not found", id)
@@ -78,6 +94,9 @@ func (cm *ContactManager) Update(id int, newEmail, newPhone string) error {
 	return nil
 }
 
+// Delete removes a contact by ID.
+// delete() on a map is safe even if the key doesn't exist,
+// but we check first to return a meaningful error to the caller.
 func (cm *ContactManager) Delete(id int) error {
 	if _, exists := cm.contacts[id]; !exists {
 		return fmt.Errorf("contact with ID %d not found", id)
@@ -86,6 +105,8 @@ func (cm *ContactManager) Delete(id int) error {
 	return nil
 }
 
+// ListAll returns all contacts as a slice.
+// Pre-allocates capacity with len(cm.contacts) to avoid repeated slice growth.
 func (cm *ContactManager) ListAll() []*Contact {
 	all := make([]*Contact, 0, len(cm.contacts))
 	for _, c := range cm.contacts {
